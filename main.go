@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	SERVER_NAME = "ns1.example.jp"
+	SERVER_NAME = "ns1.example.jp."
+	SERVER_ADMIN = "noc.example.jp."
 )
 
 // NOTE: とりあえずデコードだけできればよいので
@@ -112,17 +113,19 @@ func echoServer(c net.Conn) {
 						},
 					},
 				}
-			default:
+			case "SOA":
 				resp = Response{
 					Results: []ResponseRecord{
 						{
 							QType:   req.Parameters.QType,
 							QName:   req.Parameters.QName,
-							Content: SERVER_NAME,
+							Content: SERVER_NAME + " " + SERVER_ADMIN,
 							TTL:     300,
 						},
 					},
 				}
+			default :
+				log.Println("unspported request type: ", req.Parameters.QType)
 			}
 			encoder := json.NewEncoder(c)
 			err := encoder.Encode(resp)
