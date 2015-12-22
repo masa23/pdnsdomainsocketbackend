@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"encoding/json"
+	"flag"
 	"log"
 	"net"
 	"os"
@@ -19,27 +19,27 @@ const (
 // のSolutionB: Mixed Type structの方式で、各methodのパラメータに対応する
 // フィールドをごちゃ混ぜで持つようにします。
 type RequestParams struct {
-	Path string `json:"path"`
-	QType string `json:"qtype"`
-	QName string `json:"qname"`
-	Remote string `json:"remote"`
-	Local string `json:"local"`
+	Path       string `json:"path"`
+	QType      string `json:"qtype"`
+	QName      string `json:"qname"`
+	Remote     string `json:"remote"`
+	Local      string `json:"local"`
 	RealRemote string `json:"real-remote"`
-	ZoneID int `json:"zone-id"`
-	Name string `json:"name"`
-	Kind string `json:"kind"`
+	ZoneID     int    `json:"zone-id"`
+	Name       string `json:"name"`
+	Kind       string `json:"kind"`
 }
 
 type Request struct {
-	Method string `json:"method"`
+	Method     string        `json:"method"`
 	Parameters RequestParams `json:"parameters"`
 }
 
 type ResponseRecord struct {
-	QType string `json:"qtype"`
-	QName string `json:"qname"`
+	QType   string `json:"qtype"`
+	QName   string `json:"qname"`
 	Content string `json:"content"`
-	TTL int `json:"ttl"`
+	TTL     int    `json:"ttl"`
 }
 
 type Response struct {
@@ -99,16 +99,16 @@ func echoServer(c net.Conn) {
 				resp = Response{
 					Results: []ResponseRecord{
 						{
-							QType: "TXT",
-							QName: req.Parameters.QName,
+							QType:   "TXT",
+							QName:   req.Parameters.QName,
 							Content: req.Parameters.Remote,
-							TTL: 60,
+							TTL:     60,
 						},
 						{
-							QType: "A",
-							QName: req.Parameters.QName,
+							QType:   "A",
+							QName:   req.Parameters.QName,
 							Content: hostnameIPMaps[req.Parameters.QName],
-							TTL: 60,
+							TTL:     60,
 						},
 					},
 				}
@@ -116,10 +116,10 @@ func echoServer(c net.Conn) {
 				resp = Response{
 					Results: []ResponseRecord{
 						{
-							QType: req.Parameters.QType, 
-							QName: req.Parameters.QName,
-							Content: SERVER_NAME, 
-							TTL: 300,
+							QType:   req.Parameters.QType,
+							QName:   req.Parameters.QName,
+							Content: SERVER_NAME,
+							TTL:     300,
 						},
 					},
 				}
