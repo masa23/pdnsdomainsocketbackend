@@ -10,6 +10,10 @@ import (
 	"sync"
 )
 
+const (
+	SERVER_NAME = "ns1.example.jp"
+)
+
 // NOTE: とりあえずデコードだけできればよいので
 // http://mattyjwilliams.blogspot.jp/2013/01/using-go-to-unmarshal-json-lists-with.html
 // のSolutionB: Mixed Type structの方式で、各methodのパラメータに対応する
@@ -89,15 +93,36 @@ func echoServer(c net.Conn) {
 				log.Println("Failed to write initialize response: ", err)
 			}
 		case "lookup":
-			resp := Response{
-				Results: []ResponseRecord{
-					{
-						QType: req.Parameters.QType,
-						QName: req.Parameters.QName,
-						Content: hostnameIPMaps[req.Parameters.QName],
-						TTL: 300,
+			resp := Response{}
+			switch req.Parameters.QType {
+			case "ANY":
+				resp = Response{
+					Results: []ResponseRecord{
+						{
+							QType: "TXT",
+							QName: req.Parameters.QName,
+							Content: req.Parameters.Remote,
+							TTL: 60,
+						},
+						{
+							QType: "A",
+							QName: req.Parameters.QName,
+							Content: hostnameIPMaps[req.Parameters.QName],
+							TTL: 60,
+						},
 					},
-				},
+				}
+			default:
+				resp = Response{
+					Results: []ResponseRecord{
+						{
+							QType: req.Parameters.QType, 
+							QName: req.Parameters.QName,
+							Content: SERVER_NAME, 
+							TTL: 300,
+						},
+					},
+				}
 			}
 			encoder := json.NewEncoder(c)
 			err := encoder.Encode(resp)
